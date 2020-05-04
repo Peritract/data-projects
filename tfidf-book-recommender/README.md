@@ -4,6 +4,14 @@ This project explores a dataset of book recommendations, attempting to create a 
 
 ## Motivation
 
+I created this project for three reasons:
+
+1. As part of the Udacity Data Scientist Nanodegree
+
+2. To explore how to use TF-IDF to calculate text similarities
+
+3. To explore how useful book descriptions really are - product descriptions and reviews are constantly created and refined, used to direct readers or encourage sales. If they don't have the ability to successfully differentiate or group books, then the effort and time spent on them - by both authors and readers - is unwarranted.
+
 ## Business questions
 
 The project focuses on three questions:
