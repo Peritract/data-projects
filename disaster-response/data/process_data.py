@@ -4,6 +4,8 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """Loads and merges data from csv files. Returns a Pandas dataframe.
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     
@@ -12,7 +14,8 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
-    
+    """Cleans and processes data for storage. Returns a Pandas dataframe.
+    """
     # Expand the columns
     categories = df["categories"].str.split(";", expand=True)
 
@@ -35,7 +38,8 @@ def clean_data(df):
     return df
         
 def save_data(df, database_filename):
-    
+    """Saves a dataframe to an SQLite database.
+    """
     # Save to named file
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('Messages', engine, index=False)
