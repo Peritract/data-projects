@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 
 def load_data(database_filepath):
-    engine = create_engine(f'sqlite:///{database_filepath}.db')
+    engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table("Messages", engine)
     X = df["message"]
     Y = df.drop(["message", "id", "original", "genre"], axis=1)

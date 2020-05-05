@@ -37,7 +37,7 @@ def clean_data(df):
 def save_data(df, database_filename):
     
     # Save to named file
-    engine = create_engine(f'sqlite:///{database_filename}.db')
+    engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('Messages', engine, index=False)
 
 def main():
