@@ -22,7 +22,7 @@ The project consists of three sections:
 
 Run the following command to start the ML pipeline:
 
-```
+```bash
 python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
 ```
 
@@ -32,7 +32,7 @@ This will create and populate the SQLite database
 
 Run the following command to start the ML pipeline:
 
-```
+```bash
 python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
 ```
 
@@ -42,7 +42,7 @@ Note that the ETL pipeline needs to have been run at least once previously for t
 
 Run the following command to start the webapp locally:
 
-```
+```bash
 python app/run.py
 ```
 
