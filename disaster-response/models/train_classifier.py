@@ -1,9 +1,24 @@
 import sys
 import pandas as pd
 from sqlalchemy import create_engine
+from pickle import dump
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split, GridSearchCV
+from nltk.tokenize import word_tokenize
+from collections import defaultdict 
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk import pos_tag
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 
 
 def load_data(database_filepath):
+    """Load data from SQLite into memory.
+    """
+
     engine = create_engine(f'sqlite:///{database_filepath}')
     df = pd.read_sql_table("Messages", engine)
     X = df["message"]
@@ -12,11 +27,46 @@ def load_data(database_filepath):
     return X, Y, Y.columns
     
 def tokenize(text):
-    pass
+    """Converts text to tokens. Case-folds, removes stop words, lemmatises text.
+    """
 
+    # Set up dict for lemmatisation
+    tag_map = defaultdict(lambda : "n")  # by default, assume nouns
+    tag_map['J'] = "a"  # adjectives
+    tag_map['V'] = "v"  # verbs
+    tag_map['R'] = "r"  # adverbs
 
-def build_model():
-    pass
+    # Get stopword list
+    stops = stopwords.words("english")
+
+    # Create lemmatizer object
+    lemma = WordNetLemmatizer()
+
+    # Case fold
+    tokens = word_tokenize(text.lower())
+
+    # Tag tokens with parts of speech
+    tokens = [(token[0], tag_map[token[1][0]]) for token in pos_tag(tokens)]
+
+    # Lemmatise text
+    tokens = [lemma.lemmatize(word=w[0], pos=w[1]) for w in tokens]
+
+    # Remove stop & short words
+    tokens = [w for w in tokens if w not in stops and len(w) > 2]
+
+    # Return tokens
+    return tokens
+
+def build_model(params={}):
+    """Constructs and returns and model pipeline.
+    """
+
+    model = Pipeline([
+        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize)),
+        ("classify", MultiOutputClassifier(RandomForestClassifier(params)))
+    ])
+
+    return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
@@ -24,7 +74,8 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    pass
+    """Pickle a model to a file."""
+    dump(model, open(model_filepath, "wb"))
 
 
 def main():

@@ -33,7 +33,7 @@ This will create and populate the SQLite database
 Run the following command to start the ML pipeline:
 
 ```bash
-python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
 ```
 
 Note that the ETL pipeline needs to have been run at least once previously for this to work.
