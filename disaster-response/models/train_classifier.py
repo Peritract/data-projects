@@ -61,7 +61,7 @@ def build_model(params={}):
     """
 
     model = Pipeline([
-        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize, min_df=0.1,
+        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize, min_df=0.01,
                                             max_features=5000)),
         ("classify", MultiOutputClassifier(DecisionTreeClassifier(**params)))
     ])
@@ -102,25 +102,26 @@ def evaluate_model(model, X_test, Y_test, category_names):
     # Get the predictions
     Y_pred = model.predict(X_test)
 
+    print(Y_pred)
+
     # For each prediction, output the classification report
     for i in range(36):
         print(f"Category: {category_names[i]}")
-        print(classification_report(Y_test[:, i], Y_pred[:, i]))
-
+        print(classification_report(Y_test.iloc[:, i], Y_pred[:, i]))
 
 def save_model(model, model_filepath):
     """Pickle a model to a file."""
     dump(model, open(model_filepath, "wb"))
 
 
-def main():
+def main(): 
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2,
                                                             random_state=451)
-        
+
         print('Finding optimal parameters')
         params = tune_model(X_train, Y_train)
 
@@ -132,7 +133,7 @@ def main():
         
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 

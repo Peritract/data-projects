@@ -4,33 +4,58 @@ import pandas as pd
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk import pos_tag
+from collections import defaultdict
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
-
+import sys
 
 app = Flask(__name__)
 
 def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
+    """Converts text to tokens. Case-folds, removes stop words, lemmatises text.
+    This is the same tokenization as is done on the training data for the model.
+    """
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    # Set up dict for lemmatisation
+    tag_map = defaultdict(lambda : "n")  # by default, assume nouns
+    tag_map['J'] = "a"  # adjectives
+    tag_map['V'] = "v"  # verbs
+    tag_map['R'] = "r"  # adverbs
 
-    return clean_tokens
+    # Get stopword list
+    stops = stopwords.words("english")
+
+    # Create lemmatizer object
+    lemma = WordNetLemmatizer()
+
+    # Case fold
+    tokens = word_tokenize(text.lower())
+
+    # Tag tokens with parts of speech
+    tokens = [(token[0], tag_map[token[1][0]]) for token in pos_tag(tokens)]
+
+    # Lemmatise text
+    tokens = [lemma.lemmatize(word=w[0], pos=w[1]) for w in tokens]
+
+    # Remove stop & short words
+    tokens = [w for w in tokens if w not in stops and len(w) > 2]
+
+    # Return tokens
+    return tokens
+
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///data/DisasterResponse.db')
+df = pd.read_sql_table('Messages', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -39,10 +64,12 @@ model = joblib.load("../models/your_model_name.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
+    # Pie chart of related values
+    related_df = df["related"].value_counts()
+
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -61,6 +88,26 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Pie(
+                    values=related_df,
+                    labels=related_df.index
+                )
+            ],
+
+            'layout': {
+                'title': 'Pie chart of related messages count',
+                
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category", 
+                    'automargin': True
                 }
             }
         }
