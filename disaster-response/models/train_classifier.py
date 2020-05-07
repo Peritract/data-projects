@@ -9,11 +9,10 @@ from nltk.tokenize import word_tokenize
 from collections import defaultdict 
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk import pos_tag
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
-
+from sklearn.metrics import classification_report
+from sklearn.tree import DecisionTreeClassifier
 
 def load_data(database_filepath):
     """Load data from SQLite into memory.
@@ -58,19 +57,55 @@ def tokenize(text):
     return tokens
 
 def build_model(params={}):
-    """Constructs and returns and model pipeline.
+    """Constructs and returns a model pipeline.
     """
 
     model = Pipeline([
-        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize)),
-        ("classify", MultiOutputClassifier(RandomForestClassifier(params)))
+        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize, min_df=0.1,
+                                            max_features=5000)),
+        ("classify", MultiOutputClassifier(DecisionTreeClassifier(**params)))
     ])
 
     return model
 
+def tune_model(X, Y):
+    """Runs a grid search over the model, identifying ideal parameters
+    """
+    params = {
+        'classify__estimator__max_depth': [3, 4, 5],
+        'classify__estimator__criterion': ["entropy"],
+        'classify__estimator__min_samples_split': [2, 5, 10],
+        'classify__estimator__max_features': ["sqrt"]
+    }
+
+    # Test model
+    model = build_model()
+
+    # Gridsearch
+    gs = GridSearchCV(estimator=model, param_grid=params, verbose=2)
+    
+    gs.fit(X, Y)
+
+    best_params = {
+        'max_depth': gs.best_params_["classify__estimator__max_depth"],
+        'criterion': "gini",
+        'max_features': "sqrt",
+        'min_samples_split': gs.best_params_["classify__estimator__min_samples_split"]
+    }
+
+    return best_params
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    """Evaluate the multi-label model's predictions against the true values.
+    """
+
+    # Get the predictions
+    Y_pred = model.predict(X_test)
+
+    # For each prediction, output the classification report
+    for i in range(36):
+        print(f"Category: {category_names[i]}")
+        print(classification_report(Y_test[:, i], Y_pred[:, i]))
 
 
 def save_model(model, model_filepath):
@@ -83,10 +118,17 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2,
+                                                            random_state=451)
         
+        print('Finding optimal parameters')
+        params = tune_model(X_train, Y_train)
+
+        print('Optimal parameters found')
+        print(params)
+
         print('Building model...')
-        model = build_model()
+        model = build_model(params)
         
         print('Training model...')
         model.fit(X_train, Y_train)
