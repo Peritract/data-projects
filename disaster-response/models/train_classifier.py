@@ -61,7 +61,7 @@ def build_model(params={}):
     """
 
     model = Pipeline([
-        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize, min_df=0.01,
+        ("tfidf_vectorize", TfidfVectorizer(tokenizer=tokenize, min_df=0.001,
                                             max_features=5000)),
         ("classify", MultiOutputClassifier(DecisionTreeClassifier(**params)))
     ])
