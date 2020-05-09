@@ -2,6 +2,8 @@
 
 This project explores a dataset of book recommendations, attempting to create a recommendation tool based on similarities between descriptions.
 
+I wrote about this project on [Medium](https://medium.com/@Peritract/making-book-recommendations-with-tf-idf-16ae37534698).
+
 ## Motivation
 
 I created this project for three reasons:
