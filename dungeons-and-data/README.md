@@ -104,3 +104,9 @@ I am unsure why dexterity does not show similar correlations to other stats; I t
 All the stats except dexterity were positively correlated - to a greater or lesser degree - with CR. As the stats increase, the monster becomes a more formidable challenge. This was to be expected, but the extremely high correlation shown by hit points is a little disappointing, as it suggests that the raw numbers are more important than the various abilities monsters have, which would make the game more shallow than ideal.
 
 However, dexterity showed no positive correlation to CR, suggesting a more complex relationship than just `higher stats == higher CR`. There was also monster variation within other stats that didn't map onto CR, and some stats that had lower (albeit still positive) correlations. In all, while it's clear that there is a strong correlation between stats and CR, it's not a completely direct and simple link.
+
+## Reflection
+
+I really enjoyed this project - getting to play with interesting data is always a joy, and I got to experiment with a couple of coding tricks I had avoided previously (aligning subplots and extracting information from dicts inside columns). While the dataset was a very easy one to work with in terms of cleaning, getting the visualisations to look the way I wanted and so on needed a bit of processing, which was the main problem to overcome in this project.
+
+I'd like to work further with the API in future, now that I've had a chance to explore. For a future project, I'm thinking of generating new spells based on the current descriptions.
