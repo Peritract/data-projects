@@ -52,6 +52,6 @@ The following libraries were used to complete this project:
 
 I made several visualisations to see if anything interesting jumped out here.
 
-
+![Monster types](./images/monster_types.png)
 
 ### Are the raw stats (such as strength and charisma) strongly linked to challenge rating (a monster's canonical difficulty to overcome)?
