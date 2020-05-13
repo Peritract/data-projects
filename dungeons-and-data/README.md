@@ -26,7 +26,7 @@ Challenge rating seems - from an outside perspective - to be a bit of an arbitra
 
 ## Data Source
 
-The data for this project was pulled from the Dungeons and Dragons 5th edition API. It's a really great API to work with - the documentation is very clear, and there are no fiddly authorisation problems.
+The data for this project was pulled from the [Dungeons and Dragons 5th edition API](https://www.dnd5eapi.co/). It's a really great API to work with - the documentation is very clear, and there are no fiddly authorisation problems.
 
 The dataset used consisted of details on 322 monsters.
 
@@ -48,4 +48,10 @@ The following libraries were used to complete this project:
 
 ## Results
 
-###
+### Are there neglected monster niches?
+
+I made several visualisations to see if anything interesting jumped out here.
+
+
+
+### Are the raw stats (such as strength and charisma) strongly linked to challenge rating (a monster's canonical difficulty to overcome)?
