@@ -2,7 +2,7 @@
 
 This notebook focuses on accessing the [Dungeons & Dragons (Fifth Edition) API](https://www.dnd5eapi.co/) and exploring the different types of monsters in the game.
 
-I wrote about this project on [Dev.to]().
+I wrote about this project on [Dev.to](https://dev.to/peritract/dungeons-data-2675).
 
 ## Motivation
 
